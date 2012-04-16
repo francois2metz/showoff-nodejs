@@ -1,15 +1,7 @@
 !SLIDE bullets
-# Qui l'utilise dans le monde ?
-
-* Joyent
-* Nodejitsu
-* LearnBoost
-* Yahoo
-* ...
-
-!SLIDE bullets
+# Questions?
 
 * http://nodejs.org
 * http://github.com/ry/node
 
-# process.quit if not questions?
+François de Metz - francois2metz - francois@2metz.fr

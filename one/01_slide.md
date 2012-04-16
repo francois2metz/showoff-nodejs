@@ -1,4 +1,3 @@
 !SLIDE
-# Node - Introduction
-## François de Metz
-## Stormz
+# François de Metz - francois2metz
+# Stormz
