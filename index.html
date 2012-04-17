@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>Node.js</title>
+      <link rel="stylesheet" href="css/theme.css">
+      <link rel="stylesheet" href="css/slideshow.css">
+    <link rel="stylesheet" href="css/pygments/native.css">
+  </head>
+  <body data-duration="60">
+    <section>
+      <header class="slide">
+        <h1>Node.js</h1>
+      </header>
+    </section>
+      <section>
+        <header class="slide">
+          <h1>Introduction</h1>
+        </header>
+          <section class="slide ">
+            <h1>François de Metz - francois2metz</h1>
+
+<h1>Stormz</h1>
+
+          </section>
+          <section class="slide incremental">
+            <h1>Sondage express</h1>
+
+<ul>
+  <li class="delayed">Qui connaît nodejs ?</li>
+  <li class="delayed">Qui a déjà codé plus de 5 lignes de nodejs ?</li>
+  <li class="delayed">Qui a déjà publié un module npm ?</li>
+  <li class="delayed">Qui a déjà publié + de 1 module npm ?</li>
+</ul>
+
+          </section>
+          <section class="slide bullets incremental">
+            <h1>Nodejs c'est</h1>
+
+<ul>
+<li>c/c++</li>
+<li>v8 (google vm)</li>
+<li>une petite librairie &quot;standard&quot;</li>
+<li>Linux/Mac/Windows/...</li>
+</ul>
+
+          </section>
+          <section class="slide ">
+            <h2>Décideurs pressés, ne partez pas tout de suite</h2>
+
+<ul>
+  <li class="delayed">N°2 sur Github en nombre de watcher</li>
+  <li class="delayed">Copyright Joyent, Inc. and other Node contributors.</li>
+  <li class="delayed">MIT</li>
+  <li class="delayed"><strong class="modules">8911</strong> modules disponibles</li>
+</ul>
+
+          </section>
+          <section class="slide bullets">
+            <h1>Qui l'utilise dans le monde ?</h1>
+
+<ul>
+<li>Joyent</li>
+<li>Nodejitsu</li>
+<li>LearnBoost</li>
+<li>Yahoo</li>
+<li>...</li>
+</ul>
+
+          </section>
+          <section class="slide ">
+            <h1>Hello world</h1>
+
+<pre><code>console.log('Hello world')
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <pre><code>setTimeout(function() {
+  console.log('world')
+}, 2000)
+console.log('Hello')
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <h1>Require</h1>
+
+<pre><code>var url = require('url')
+
+console.log(url.parse('http://nodejs.org/api/url.html'))
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <h1>Requêtes HTTP</h1>
+
+<pre><code>var http = require('http')
+
+http.get({host: 'duckduckgo.com'}, function(res) {
+    console.log(res.statusCode)
+})
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <h1>Serveur HTTP</h1>
+
+<pre><code>var http = require('http')
+
+http.createServer(function (req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain'})
+  res.end('Hello World\n')
+}).listen(1234)
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <h2>Un vrai programme</h2>
+
+<pre><code>var http = require('http')
+
+var lastStatus = -1
+
+setInterval(function() {
+    http.get({host: 'duckduckgo.com'}, function(res) {
+        console.log(res.statusCode)
+        lastStatus = res.statusCode
+    })
+}, 5000)
+
+http.createServer(function (req, res) {
+    res.writeHead(200, {'Content-Type': 'text/plain'})
+    res.end('last status of duckduckgo:'+ lastStatus +'\n')
+}).listen(1234)
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <h1>Les IO sont non bloquantes</h1>
+
+          </section>
+          <section class="slide ">
+            <h1>Démonstration</h1>
+
+<pre><code>var http = require('http')
+
+console.log('currend pid', process.pid)
+
+http.createServer(function (req, res) {
+    setTimeout(function() {
+        res.writeHead(200, {'Content-Type': 'text/plain'})
+        res.end('Hello World from pid '+ process.pid +'\n')
+    }, 2000)
+}).listen(1234)
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <h1>Event Loop / reactor pattern</h1>
+
+          </section>
+          <section class="slide ">
+            <h1>Avantages</h1>
+
+<ul>
+<li>1 seul processus, 1 seul thread</li>
+<li>pas de mémoire partagé</li>
+<li>fast</li>
+</ul>
+
+          </section>
+          <section class="slide ">
+            <h1>Inconvénient</h1>
+
+<ul>
+<li>1 seul coeur utilisé</li>
+<li>callback soup ?</li>
+</ul>
+
+          </section>
+          <section class="slide ">
+            <blockquote>
+<p>Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications.</p>
+</blockquote>
+          </section>
+          <section class="slide ">
+            <h1>Cluster</h1>
+
+          </section>
+          <section class="slide ">
+            <pre><code>var cluster = require('cluster')
+var http = require('http')
+var numCPUs = require('os').cpus().length
+
+if (cluster.isMaster) {
+  // Fork workers.
+  for (var i = 0; i &lt; numCPUs; i++) {
+    cluster.fork()
+  }
+
+  cluster.on('death', function(worker) {
+    console.log('worker ' + worker.pid + ' died')
+  })
+} else {
+  // Worker processes have a http server.
+  http.Server(function(req, res) {
+    console.log('Hello from pid', process.pid)
+    setTimeout(function() {
+        res.writeHead(200, {'Content-Type': 'text/plain'})
+        res.end('Hello World from pid '+ process.pid +'\n')
+    }, 2000)
+  }).listen(1234)
+}
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <h1>NPM (Node Package manager)</h1>
+
+          </section>
+          <section class="slide ">
+            <pre><code>npm install underscore
+
+npm install -g coffee-script
+
+npm install
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <h1>Créer un module</h1>
+
+          </section>
+          <section class="slide small">
+            <h1>package.json</h1>
+
+<pre><code>{
+  &quot;name&quot;: &quot;parisjs-website&quot;,
+  &quot;version&quot;: &quot;0.0.1&quot;,
+  &quot;main&quot;: &quot;./utils/meetups.js&quot;,
+  &quot;dependencies&quot;: {
+      &quot;jsdom&quot;: &quot;&quot;,
+      &quot;underscore&quot;: &quot;&quot;
+  },
+  &quot;devDependencies&quot;: {}
+}
+</code></pre>
+
+          </section>
+          <section class="slide ">
+            <pre><code>exports.plop = function() {
+    return 'plop'
+}
+</code></pre>
+
+          </section>
+          <section class="slide bullets">
+            <h1>Questions?</h1>
+
+<ul>
+<li>http://nodejs.org</li>
+<li>http://github.com/ry/node</li>
+</ul>
+
+<p>François de Metz - francois2metz - francois@2metz.fr</p>
+
+          </section>
+      </section>
+      <script src="js/slideshow.js"></script>
+      <script src="js/classList.js"></script>
+      <script src="fullscreen.js"></script>
+      <script src="examples/003_require.js"></script>
+      <script src="examples/009_module.js"></script>
+      <script src="examples/001_consolelog.js"></script>
+      <script src="examples/006_a_real_program.js"></script>
+      <script src="examples/008_cluster.js"></script>
+      <script src="examples/002_settimeout.js"></script>
+      <script src="examples/005_http_server.js"></script>
+      <script src="examples/007_nonblocking_io.js"></script>
+      <script src="examples/node_modules/underscore/underscore-min.js"></script>
+      <script src="examples/node_modules/underscore/index.js"></script>
+      <script src="examples/node_modules/underscore/underscore.js"></script>
+      <script src="examples/004_http_request.js"></script>
+    <script>var slideshow = new SlideShow();</script>
+  </body>
+</html>
